@@ -1,0 +1,46 @@
+{
+    "variables": {
+      "aws_profile": "",
+      "aws_region": "",
+      "environment": ""
+    },
+    "builders": [
+      {
+        "profile":"{{user `aws_profile`}}",
+        "region": "{{user `aws_region`}}",
+        "ami_name": "NGINX PHP-FPM and Symphony4 - {{timestamp}}",
+        "instance_type": "t2.micro",
+        "source_ami_filter":{
+            "filters":{
+              "virtualization-type": "hvm",
+              "name": "amzn-ami-hvm-2018.03.*-ebs",
+              "root-device-type": "ebs"
+            },
+            "owners": ["137112412989", "591542846629", "801119661308", "102837901569", 
+              "013907871322", "206029621532", "286198878708", "443319210888"],
+            "most_recent": true
+        },
+        "type": "amazon-ebs",
+        "ssh_username": "ec2-user",
+        "ssh_pty": "true",
+        "tags": {
+          "environment": "{{user `environment`}}"
+        }
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "file",
+        "source": "install.sh",
+        "destination": "/tmp/"
+      },
+      {
+        "type": "shell",
+        "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo {{ .Path }}",
+        "scripts": [
+          "install.sh"
+        ]
+      }
+    ]
+}
+  
